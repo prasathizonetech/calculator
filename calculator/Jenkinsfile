@@ -23,32 +23,39 @@ pipeline {
 
         stage('Check Maven') {
             steps {
-                bat 'mvn -version'
+                dir('calculator') {
+                    bat 'mvn -version'
+                }
             }
         }
 
         stage('Compile') {
             steps {
-                bat 'mvn clean compile'
+                dir('calculator') {
+                    bat 'mvn clean compile'
+                }
             }
         }
 
         stage('Package') {
             steps {
-                bat 'mvn clean package'
+                dir('calculator') {
+                    bat 'mvn clean package'
+                }
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Build') {
             steps {
-                bat 'docker build -t %DOCKER_IMAGE%:%IMAGE_TAG% .'
+                dir('calculator') {
+                    bat 'docker build -t %DOCKER_IMAGE%:%IMAGE_TAG% .'
+                }
             }
         }
 
     }
 
     post {
-
         success {
             echo 'Build Successful'
         }
@@ -56,7 +63,5 @@ pipeline {
         failure {
             echo 'Build Failed'
         }
-
     }
-
 }
