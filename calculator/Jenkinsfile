@@ -1,0 +1,62 @@
+pipeline {
+
+    agent any
+
+    tools {
+        maven 'mvn3.9.9'
+    }
+
+    environment {
+        DOCKER_IMAGE = 'calculator'
+        IMAGE_TAG = '1.0'
+    }
+
+    stages {
+
+        stage('Git Clone') {
+            steps {
+                git branch: 'main',
+                    credentialsId: '24c433e1-eaf1-4ca7-9d7d-0da6d63a8905',
+                    url: 'https://github.com/prasathizonetech/calculator.git'
+            }
+        }
+
+        stage('Check Maven') {
+            steps {
+                bat 'mvn -version'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                bat 'mvn clean compile'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                bat 'mvn clean package'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t %DOCKER_IMAGE%:%IMAGE_TAG% .'
+            }
+        }
+
+    }
+
+    post {
+
+        success {
+            echo 'Build Successful'
+        }
+
+        failure {
+            echo 'Build Failed'
+        }
+
+    }
+
+}
